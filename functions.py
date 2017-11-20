@@ -5,6 +5,14 @@ class Classifier( object ):
 	def __init__( self ):
 		print "starting classifier"
 
+	'''
+	Function name: SGD()
+	Function description: 
+	'''
+	def SGD( self, X, Y, W, learningRate = 0.00005 ):
+		print "starting sgd"
+		newX, newY = self.shuffle( X, Y )
+	
 
 	'''
 	Function name: shuffle()
@@ -55,6 +63,7 @@ class Classifier( object ):
 		return ( 1 - err )	
 
 
+# Testing classifier class
 x = np.array([[1,2,3,4], [23, 13, 7, 5],[101, 201, 301, 401]])
 y = np.array([[1,1,3,4], [11,22,33,44]])
 w = np.array([[10],[20],[30]])
@@ -63,8 +72,7 @@ w = np.array([[10],[20],[30]])
 test = Classifier()
 
 newX, newY =  test.shuffle( x, w )
-print "newX = ", newX
-print "newY = ", newY
+test.SGD( x, w, y )
 
 '''
 print "reporting classification error"
