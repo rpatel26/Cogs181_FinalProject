@@ -1,9 +1,10 @@
 import numpy as np
+import numpy.matlib
 
 class Model( object ):
 	
 	def __init__( self ):
-		print "starting classifier"
+		print "starting model"
 
 	'''
 	Function name: SGD()
@@ -63,115 +64,48 @@ class Model( object ):
 		return ( 1 - err )	
 
 class Classifier( object ):
-	''' Hopfield Network '''
-	def hopfieldNetwork():
-		print "Starting Hopfield Network"
-	
-		V = np.array( [ [ -1, 1, 1, -1, 1 ], [ 1, -1, 1, -1, 1 ] ] )
 
-		W = generateWeightMatrix( V.T )
+	def __init__( self ):
+		print "starting classifier"
 
-		V = np.array( [ [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ] ] )
+			
+	'''
+	Xtrain -- row vector containing feature data
+	'''
+	def KMeans( self, Xtrain, K ):
+		print "Starting K-Means"
+
+		Xshape = Xtrain.shape
 	
-		order = np.array( [ 3, 1, 5, 2, 4 ] )
-		print "visiting pattern = ", order
-		print "started with = "
-		print V
-		U, updateHistory  = hopfieldNetworkAlgorithm( W, V, order )
-		print "updateHistory = "
-		print updateHistory
-		print "ended with = "
-		print U
+		# initialize cluster centers by randomly picking points from the data
+		randIndex = np.random.permutation( Xshape[0] )
+		randIndex = np.reshape( randIndex, ( Xshape[0], 1) )
+		means = Xtrain[ randIndex[0:K], :]
 	
-		print "\n"
-		V = np.array( [ [ 1 ], [ 1 ], [ 1 ], [ 1 ], [ 1 ] ] )
-		order = np.array( [ 2, 4, 3, 5, 1 ] )
-		print "visiting pattern = ", order
-		print "started with = "
-		print V
-		U, updateHistory  = hopfieldNetworkAlgorithm( W, V, order )
-		print "updateHistory = "
-		print updateHistory
-		print "ended with = "
-		print U
+		maxIters = 1000
+
+		for i in range( maxIters ):
+			distMatrix = self.squareDistanceMetric( Xtrain, means )
+			break
 
 	'''
-	Function Name: hopfieldNetworkAlgorithm()
-	Function description: this function perform the algorithm for hopfield
-		network algorithm
-	Parameters:
-		W -- weight matrix of the network
-		V -- initial state of the network
-		order -- vector specifying the visiting order of each nodes
-							by default, its sequential visiting order
-	Return values:
-		U -- end state of the hopfield network
-		updateHistory -- matrix whose columns represent the state of hopfield
-			network at each iteration
-	'''	
-	def  hopfieldNetworkAlgorithm( W, V, order = None ):
-		U = V
-		Vshape = V.shape
-		updateHistory = U
+	Assign each data vector to closest mu vector
+	- do this by first calculating a squared distance matrix where the n,k entry
+		contains the squared distance from the nth data vector to the kth mu vector
+	'''
+	def squareDistanceMetric( self, Data, Centers ):
+		dataShape = Data.shape
+		N = dataShape[0]
+		D = dataShape[1]
 
-		if order is None:
-			order = range( Vshape[ 0 ] )
+		K = Centers.shape
+		K = K[0]
+
+		for i in range( K ):
+			for j in range( N ):
+
+		return -1
 	
-		error = True
-		count = 0
-
-		while error:
-			error = False
-			for i in order:
-				temp = evolve( W, U, i )
-				count += 1
-				if U[ i - 1 ] != temp:
-					count = 0
-					error = True
-				U[ i - 1 ] = temp
-				updateHistory = np.append( updateHistory, U, axis = 1 )
-				if count == Vshape[0]:
-					break
-
-		return U, updateHistory
-
-	'''
-	Function name: evolve()
-	Function description: this function determines the next state of a
-		given neuron for the hopfield network algorithm
-	Parameters:
-		W -- weight matrix of the hopfield network
-		X -- current state of the hopfield network
-		position -- node whose state needs to be updated
-	Return values:
-		-1 -- if the next state of the neuron is OFF
-		+1 -- if the next state of the neuron is ON
-	'''	
-	def evolve( W, X, position ):	
-		newX = np.dot( W[ position - 1, : ], X )
-		if newX < 0:
-			return -1
-		else:
-			return 1
-
-	'''
-	Function name: generateWeightMatrix()
-	Functiion description: this function generates the weight matrix for
-		the hopfield network
-	Parameters:
-		X -- matrix whose columns represents the patterns that needs to be
-					memorized
-	Return value:
-		W -- weight matrix of the hopfield network
-	'''
-	def generateWeightMatrix( X ):
-		XShape = X.shape
-		W = np.matmul( X, X.T )/ float( XShape[0] )
-		W = W - ( ( float( XShape[1] ) / float( XShape[0] ) ) * np.identity( XShape[0] ) )
-
-		return W
-
-
 # Testing classifier class
 x = np.array([[1,2,3,4], [23, 13, 7, 5],[101, 201, 301, 401]])
 y = np.array([[1,1,3,4], [11,22,33,44]])
@@ -181,13 +115,30 @@ data = np.loadtxt( 'Q4_data.txt',
 									converters = { -1 : lambda s: { b'Iris-virginica': 0,
 																									b'Iris-versicolor': 1}[s]})
 
-print data
+x = data[ :, 0: 4 ]
+y = data[ :, 4 ]
+Yshape = y.shape
+y = np.reshape(y , ( Yshape[0], 1 ))
+
+
+Xtest = x[ 0:15, : ]
+Ytest = y[ : 15 ] 
+Ytest = np.append( Ytest, y[50:65] )
+Xtest = np.append( Xtest, x[50:65,:], axis = 0 )
+
+Xtrain = x[15:50, :]
+Xtrain = np.append( Xtrain, x[65:100, :], axis = 0 )
+Ytrain = y[15:50]
+Ytrain  = np.append( Ytrain, y[65:100] )
+
+
 
 test = Model()
+newX, newY =  test.shuffle( x, y )
 
-newX, newY =  test.shuffle( x, w )
-test.SGD( x, w, y )
-
+K = 5
+test2 = Classifier()
+test2.KMeans( Xtrain, K )
 '''
 print "reporting classification error"
 err = test.classificationError( x, y )
