@@ -1,5 +1,6 @@
 import numpy as np
 import numpy.matlib
+import matplotlib.pyplot as plt
 
 class Model( object ):
 	
@@ -81,13 +82,70 @@ class Classifier( object ):
 		randIndex = np.random.permutation( Xshape[0] )
 		randIndex = np.reshape( randIndex, ( Xshape[0], 1) )
 		means = Xtrain[ randIndex[0:K], :]
-	
-		maxIters = 1000
+
+		oldMeans = means	
+		maxIters = 30000
 
 		for i in range( maxIters ):
 			distMatrix = self.squareDistanceMetric( Xtrain, means )
-			break
+			rank = self.determineRank( distMatrix )
+			
+			oldMeans = means
+			means = self.recalcMeans( Xtrain, rank )
 
+			if np.linalg.norm( (oldMeans - means) ) < 0.0000001:
+				print "i = ", i
+				break	
+
+	def plotCurrent( self, Data, Ranks, Means ):
+		dataShape = Data.shape
+		N = dataShape[0]
+		D = dataShape[1]
+
+		meanShape = Means.shape
+		K = meanShape[0]
+
+		# clear old plot
+		plt.clf()
+		figure( 1 )
+		
+	
+	def recalcMeans( self, Data, Ranks ):
+		dataShape = Data.shape
+		rankShape = Ranks.shape
+
+		N = dataShape[0]
+		D = dataShape[1]
+		K = rankShape[1]
+
+		Ksum = np.sum( Ranks, axis = 0 )
+		means = np.zeros( ( K, D ) )
+
+		for i in range( N ):
+			for j in range( K ):
+				if Ranks[ i, j ] == 1:
+					means[ j, : ] = means[ j, : ] + Data[ i, : ]
+
+		for i in range( K ):
+			if Ksum[ i ] != 0:
+				means[ i, : ] =np.divide( means[ i, : ], Ksum[ i ] )
+
+		return means
+
+	def determineRank( self, distMatrix  ):
+		distShape = distMatrix.shape
+		N = distShape[0]
+		K = distShape[1]
+
+		index = np.argmin( distMatrix, axis = 1)
+		index = np.reshape( index, ( N, 1 ) )
+		rank = np.zeros( ( N, K ) )
+		
+		for i in range( N ):
+			rank[ i, index[ i, 0 ] ] = 1
+
+		return rank
+	
 	'''
 	Assign each data vector to closest mu vector
 	- do this by first calculating a squared distance matrix where the n,k entry
@@ -96,15 +154,19 @@ class Classifier( object ):
 	def squareDistanceMetric( self, Data, Centers ):
 		dataShape = Data.shape
 		N = dataShape[0]
-		D = dataShape[1]
 
 		K = Centers.shape
 		K = K[0]
 
+		sqDistance = np.zeros( ( N, K ) )
 		for i in range( K ):
 			for j in range( N ):
-
-		return -1
+				# square distance in the jth cluster
+				diff = Data[ j, : ] - Centers[ i, : ]
+				diff = np.multiply( diff, diff )
+				sqDistance[ j, i ] = np.sum( diff )
+		
+		return sqDistance
 	
 # Testing classifier class
 x = np.array([[1,2,3,4], [23, 13, 7, 5],[101, 201, 301, 401]])
