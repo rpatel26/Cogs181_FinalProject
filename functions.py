@@ -64,52 +64,90 @@ class Model( object ):
 
 		return ( 1 - err )	
 
+	'''
+	Function name: meanSquareError()
+	Function description: this method provides the mean square error for the
+		classifier
+	Parameters:
+		trueLabel -- vector of true class labels
+		classificationLabels -- classs labels as determined by the classifier
+	Return value:
+		err -- mean square error for the classifier
+	'''	
+	def meanSquareError( self, trueLabel, classificationLabels ):
+		trueLabelShape = trueLabel.shape
+		classificationLabelShape = classificationLabels.shape
+
+		if trueLabelShape != classificationLabelShape:
+			print "Incorrect input dimension, cannot generate MSError"
+			print "Exiting..."
+
+			return -1
+		err = self.classificationError( trueLabel, classificationLabels )
+		return np.sqrt( err )
+
+###########################################################################################################################################
+###########################################################################################################################################
+###########################################################################################################################################
 class Classifier( object ):
 
 	def __init__( self ):
 		print "starting classifier"
 
-			
+	def relu( self, x ):
+		relu = x * ( x > 0 ).astype( float )
+		print relu
+		return relu		
+				
 	'''
-	Xtrain -- row vector containing feature data
+	Function name: KMeans()
+	Function description: thie method performs the K-means clustering algorithm
+		on the input dataset
+	Parameters:
+		X -- feature vecctor, where each data point is a row vector
+		K -- number of clusters, (by default, K = 2 )
+	Return value:
+		ranks -- matrix containing which cluster each datapoint belongs to,
+							uses one-hot encoding for the cluster
 	'''
-	def KMeans( self, Xtrain, K ):
+	def KMeans( self, X, K = None ):
 		print "Starting K-Means"
+		
+		if K == None:
+			K = 2
 
-		Xshape = Xtrain.shape
+		Xshape = X.shape
 	
 		# initialize cluster centers by randomly picking points from the data
 		randIndex = np.random.permutation( Xshape[0] )
 		randIndex = np.reshape( randIndex, ( Xshape[0], 1) )
-		means = Xtrain[ randIndex[0:K], :]
+		means = X[ randIndex[0:K], :]
 
 		oldMeans = means	
 		maxIters = 30000
 
 		for i in range( maxIters ):
-			distMatrix = self.squareDistanceMetric( Xtrain, means )
+			distMatrix = self.squareDistanceMetric( X, means )
 			rank = self.determineRank( distMatrix )
 			
 			oldMeans = means
-			means = self.recalcMeans( Xtrain, rank )
+			means = self.recalcMeans( X, rank )
 
 			if np.linalg.norm( (oldMeans - means) ) < 0.0000001:
-				print "i = ", i
+				#print "i = ", i
 				break	
-
-	def plotCurrent( self, Data, Ranks, Means ):
-		dataShape = Data.shape
-		N = dataShape[0]
-		D = dataShape[1]
-
-		meanShape = Means.shape
-		K = meanShape[0]
-
-		# clear old plot
-		plt.clf()
-		figure( 1 )
 		
-	
+		return rank	
+
+	'''
+	Function name: recalcMeans()
+	Function description: this method computes the cluster means
+	Parameters:
+		Data -- datapoints, as row vectors
+		Ranks -- matrix depicting which cluster each datapoints belong to
+	Return value:
+		means -- means for each cluster
+	'''	
 	def recalcMeans( self, Data, Ranks ):
 		dataShape = Data.shape
 		rankShape = Ranks.shape
@@ -132,6 +170,17 @@ class Classifier( object ):
 
 		return means
 
+	'''
+	Function name: determinRank()
+	Function description: this method classifies each datapoint into one of
+		the clusters
+	Parameters:
+		distMatrix -- matrix containing the distance of each datapoint from each
+			of the cluster
+	Return value:
+		rank -- matrix containing which cluster each datapoint belongs to,
+							uses one-hot encoding for the cluster
+	'''
 	def determineRank( self, distMatrix  ):
 		distShape = distMatrix.shape
 		N = distShape[0]
@@ -147,9 +196,15 @@ class Classifier( object ):
 		return rank
 	
 	'''
-	Assign each data vector to closest mu vector
-	- do this by first calculating a squared distance matrix where the n,k entry
-		contains the squared distance from the nth data vector to the kth mu vector
+	Function name: sqaureDistanceMetric()
+	Function description: this method calculates the square of the distance of
+		each datapoint from each cluster
+	Parameters:
+		Data -- datapoints, each datapoint is a row vector
+		Centers -- means for each cluster
+	Return value:
+		sqDist -- matrix containing the square distance of each datapoint from
+							each cluster
 	'''
 	def squareDistanceMetric( self, Data, Centers ):
 		dataShape = Data.shape
@@ -167,7 +222,11 @@ class Classifier( object ):
 				sqDistance[ j, i ] = np.sum( diff )
 		
 		return sqDistance
-	
+
+###########################################################################################################################################
+###########################################################################################################################################
+###########################################################################################################################################
+###########################################################################################################################################	
 # Testing classifier class
 x = np.array([[1,2,3,4], [23, 13, 7, 5],[101, 201, 301, 401]])
 y = np.array([[1,1,3,4], [11,22,33,44]])
@@ -198,11 +257,9 @@ Ytrain  = np.append( Ytrain, y[65:100] )
 test = Model()
 newX, newY =  test.shuffle( x, y )
 
-K = 5
+x = np.array([[1, 2, 3, 4, -1, -2]])
+K = 2
 test2 = Classifier()
-test2.KMeans( Xtrain, K )
-'''
-print "reporting classification error"
-err = test.classificationError( x, y )
-print err
-'''
+rank = test2.KMeans( Xtrain, K )
+print "rank = ", rank.shape
+test2.relu( x )
