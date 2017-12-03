@@ -1,0 +1,8 @@
+To do marysas analysis(assuming ffmpeg is installed on your PC)
+
+1. Go on FMA and download a set of songs from a certain genre
+2. Use convert_to_wav.sh to batch convert mp3 files to wav files
+3. Copy wav files over to ieng6
+4. Use get-mf to make mf directories
+5. Add labels using :g/$/s//*
+6. use .../marsyas/bin/build/bextract -sv mf
