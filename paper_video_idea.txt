@@ -1,0 +1,5 @@
+1. for k-means, loop through 1-n numbers to find optimal k for k means with classification error. then we can discuss the physical significance of the number if it's not 10
+2. features extracted and which ones are most prominent and why they are prominent. what distinguishes them from the other features?
+3. which algorithm performs best and WHY?
+4. what's the motivation for our project
+5. were not given enough space so could not store enough data to train our stuff :( :( :( :( :(
