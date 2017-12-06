@@ -1,11 +1,35 @@
 import numpy as np
 import numpy.matlib
 import matplotlib.pyplot as plt
+from random import *
 
 class Model( object ):
 	
 	def __init__( self ):
 		print "starting model"
+
+	def kFoldCrossValidation( self, X, Y, num_folds = 5, model = None ):
+		print "starting K-Fold cross validation: K = ", num_folds
+
+		# Randomizing data
+		X, Y = self.shuffle( X, Y )
+
+		Xtrain_shape = X.shape
+
+		for i in range( num_folds ):
+			# getting the lower and upper bound for the new dataset
+			lower = i * Xtrain_shape[ 0 ] / num_folds
+			upper = lower + ( Xtrain_shape[ 0 ] / num_folds )
+
+			# new testing set
+			newX_test = X[ lower : upper ]
+			newY_test = Y[ lower : upper ]
+
+			# new training set
+			newX_train = np.delete( X, range( lower, ( upper + i ) ), 0 )
+			newY_train = np.delete( Y, range( lower, ( upper + i ) ), 0 )
+
+	
 
 	'''
 	Function name: SGD()
@@ -27,6 +51,7 @@ class Model( object ):
 		shuffledY -- label vectors ordered corresponding to feature vectors
 	'''
 	def shuffle( self, X, Y ):
+		Y = np.reshape( Y, ( Y.shape[ 0 ], 1 ) )
 		M = X
 
 		M = np.append( M, Y, axis = 1 )
@@ -89,6 +114,7 @@ class Model( object ):
 ###########################################################################################################################################
 ###########################################################################################################################################
 ###########################################################################################################################################
+###########################################################################################################################################
 class Classifier( object ):
 
 	def __init__( self ):
@@ -98,7 +124,97 @@ class Classifier( object ):
 		relu = x * ( x > 0 ).astype( float )
 		print relu
 		return relu		
-				
+	
+
+	def K_Fold_Cross_Validation_KMeans( self, XTrain, Ytrain, num_folds = 5 ):
+		print "starting K-Fold cross validation: num_folds = ", num_folds
+
+		model = Model()
+		# Randomizing data
+		X, Y = model.shuffle( Xtrain, Ytrain )
+
+		Xtrain_shape = X.shape
+
+		K = range( 2, 20 )
+		print "K = ", K
+
+		Y = self.one_hot_encoder( Y, num_classes = 2 )
+		
+		for j in K:
+			for i in range( num_folds ):
+				# getting the lower and upper bound for the new dataset
+				lower = i * Xtrain_shape[ 0 ] / num_folds
+				upper = lower + ( Xtrain_shape[ 0 ] / num_folds )
+
+				# new testing set
+				newX_test = X[ lower : upper ]
+				newY_test = Y[ lower : upper ]
+
+				# new training set
+				newX_train = np.delete( X, range( lower, ( upper + i ) ), 0 )
+				newY_train = np.delete( Y, range( lower, ( upper + i ) ), 0 )
+
+				# running K-Means on training dataset
+				ranks, means = self.KMeans( newX_train, K = j )
+				classLabels = labelCluster( ranks, newX_train, K = j )
+
+				# Classification of testing dataset
+				dist = self.squareDistanceMetric( newX_test, means )
+				testRank = self.determineRank( dist )
+				clusterLabel = self.labelCluster( testRank, newY_test, K = j )
+			
+				break
+
+			break
+
+
+	def labelCluster( self, Ranks, labels, K ):
+		clusterLabel = np.random.rand( 1, K )
+		
+		rankShape = Ranks.shape
+	
+		temp = np.zeros( ( 1, labels.shape[ 1 ] ) )
+
+		for i in range( K ):
+			for j in range( rankShape[ 0 ] ):
+				if Ranks[ j, i ] == 1:
+					temp += labels[ j, : ]
+
+			clusterLabel[ 0, i ] = np.argmax( temp )
+
+		print "clusterLabel = ", clusterLabel
+		
+		return clusterLabel
+
+	'''
+	Function name: one_hot_encoder()
+	Function description: this function encodes the data vector via one-hot encoding
+	Parameters:
+		y -- data vector to encode ( shape = ( N, 1 ) )
+		num_classes -- number of classes (optional)
+	Return value:
+		one_hot_encoder -- matrix composed to one-hot vector of y
+	'''
+	def one_hot_encoder( self, y, num_classes = None ):
+		y = np.array( y, dtype = 'int' )
+		input_shape = y.shape
+
+		if input_shape and input_shape[ -1 ] == 1 and len( input_shape ) > 1:
+			input_shape = tuple( input_shape[ : -1 ] )
+
+		y = y.ravel()
+
+		if not num_classes:
+			num_classes = np.max( y ) + 1
+
+		n = y.shape[ 0 ]
+		
+		categorical = np.zeros( ( n, num_classes ) )
+		categorical[ np.arange( n ), y ] = 1
+		output_shape = input_shape + ( num_classes, )
+		categorical = np.reshape( categorical, output_shape )
+		return categorical
+	
 	'''
 	Function name: KMeans()
 	Function description: thie method performs the K-means clustering algorithm
@@ -111,8 +227,6 @@ class Classifier( object ):
 							uses one-hot encoding for the cluster
 	'''
 	def KMeans( self, X, K = None ):
-		print "Starting K-Means"
-		
 		if K == None:
 			K = 2
 
@@ -137,7 +251,7 @@ class Classifier( object ):
 				#print "i = ", i
 				break	
 		
-		return rank	
+		return rank, means
 
 	'''
 	Function name: recalcMeans()
@@ -253,7 +367,7 @@ Ytrain = y[15:50]
 Ytrain  = np.append( Ytrain, y[65:100] )
 
 
-
+'''
 test = Model()
 newX, newY =  test.shuffle( x, y )
 
@@ -263,3 +377,8 @@ test2 = Classifier()
 rank = test2.KMeans( Xtrain, K )
 print "rank = ", rank.shape
 test2.relu( x )
+'''
+testKFold = Classifier()
+print "Xshape = ", Xtrain.shape
+K = 5
+testKFold.K_Fold_Cross_Validation_KMeans( Xtrain, Ytrain, K )
