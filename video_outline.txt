@@ -1,0 +1,41 @@
+1. Why are we looking at this?
+	Looking at different features of music, to see which ones are more significant in terms of determining different genres of music. Country, classical, rock, and hip-hop. We use traditional machine learning methods (logistic regression) and compare it with a deep learning method (multi-layer perceptron) to see which one classifies them better. In addition, we look at the features that are the most significant in these genres of music. Looking at the significant features in music can show us what the special traits of each genre are in the future and help with music classification, and comparing traditional machine learning methods with deep learning in terms of the importance of machine learning.
+
+2. Methods
+	A. Data Gathering
+		Download FMA files 
+		Use MARYSAS to extract features of mp3 files
+	B. Logistic Regression
+	C. K-means
+	D. Multi-Layer Perceptron
+		Using Tensorflow
+		Perceptron,  varying number of hidden units and layers, 
+		talk about theory of varying number of hidden units and layers https://stats.stackexchange.com/questions/181/how-to-choose-the-number-of-hidden-layers-and-nodes-in-a-feedforward-neural-netw
+		Which one is best? how much better? compare statistics
+
+3. Results
+
+	B. In Logistic Regression, what features for each genre are most statistically significant
+	C. K-means clustering, how many clusters does it return as best? Using 4 clusters what results do we return? is it a good classification algorithm?
+	D. In MLP, which number of hidden units and number of hidden layers is best?
+
+4. Discussion
+
+	B. Why is each feature most statistically significant for each genre?
+	C. If we don't get 4 clusters, what are some possible reasons why we didn't get four clusters? (which is what we expected)? If we do get four clusters, which cluster "clusters" the best and which ones do not cluster as well? Why? Especially considering that rock and hip-hop are very similar genres.
+	D. in MLP, we get N number of hidden units and N number of hidden layers is best. Because theoretically, look at link attached above. Don't wan't to overfit. :)
+
+
+
+Answer to De Sa's questions
+2. Relate to Class
+	We used K-means clustering in class, also talked about deep learning-multi-layer perceptron. 
+3. Data was hard... we tried to get FMA but couldn't. Had to download our own data and use it. Took a very long time. MARSYAS was also a very confusing package to set up. Ended up doing everything on our own computers. We also had to switch between a lot of datasets because we wanted to analyze the significance of the features, so in the end we ended up extracting our own features from data
+
+7. We got MARYSAS to work on our own computers??
+
+9. Problems with the algorithm??
+
+	K-means clustering with different numbers of K than expected does not have a physical meaning. MLP is supposed to be used for data that is not linearly dependent, and our data is not linearly dependent.
+	We need to talk about why we chose K-means and MLP instead of other algorithms. We decided against using CNN, RNN because those are mainly used for data that is recursive and somewhat connected, but the features we used are already extracted so the "connectedness" of them has been removed and thus CNN and RNN cannot be used for this dataset. Other traditional machine learning approaches can also be used, but K-means is the most significant in terms of clustering. 
+
