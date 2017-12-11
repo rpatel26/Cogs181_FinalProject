@@ -1,0 +1,21 @@
+Abstract
+-Do last. Should be a brief summary of the entire paper.
+
+Introduction
+-Introduce the topic, our initial feelings, what we hope to do.
+
+Methods
+-Logistic Regression to obtain initial estimates of features important to genre classification.
+-KMeans to see if those features are statistically significant.
+-MLP to use deep learning to improve upon genre classification accuracy of more standard machine learning methods.
+
+Results
+-Lay out all of the results from above. Don't go into our explanations or ideas about why they occur.
+-Logistic Regression: Validity as a classifier, our lists of statistically significant features.
+-KMeans: Whether or not our clusters after taking out the statistically significant features resemble them before
+and what meaning this has on their ability to differentiate one genre of music from another.
+-MLP: Optimal hyperparameters for music genre classification, whether or not Single Multiclass Categorization or 
+Multiple Binary Categorization perform better.
+
+Discussion
+-Discuss the results and compare them to those in our reference papers.
