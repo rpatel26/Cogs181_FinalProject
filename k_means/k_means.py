@@ -166,7 +166,7 @@ class Classifier( object ):
 				ranks, means = self.KMeans( newX_train, K = j )
 				classLabels = labelCluster( ranks, newX_train, K = j )
 
-				# Classification of testing dataset
+				# Classificatior of testing dataset
 				dist = self.squareDistanceMetric( newX_test, means )
 				testRank = self.determineRank( dist )
 				clusterLabel = self.labelCluster( testRank, newY_test, K = j )
@@ -291,7 +291,6 @@ class Classifier( object ):
 				means[ i, : ] =np.divide( means[ i, : ], Ksum[ i ] )
 
 		return means
-
 	'''
 	Function name: determinRank()
 	Function description: this method classifies each datapoint into one of
@@ -350,6 +349,20 @@ class Classifier( object ):
 ###########################################################################################################################################
 ###########################################################################################################################################	
 
+def classifiedPercentage(clustering_output, y_real):
+##returns a matrix of length number of clusters, width is 5 (number of classes)
+#each row is a different cluster, each column is a different class that the cluster belongs in
+	data_length = np.size(clustering_output, 0)
+	num_clusters = np.size(clustering_output, 1)
+	num_class = np.size(y_real, 1)
+	classify_out = np.zeros((num_clusters, num_class))
+	for i in range(data_length):
+		for j in range(num_clusters):
+			if clustering_output[i][j] == 1:
+				classify_out[j] = classify_out[j] + y_real[i] 
+				break
+	return classify_out
+
 data = pd.read_csv(sys.argv[1], delimiter = ',', comment = '%', skiprows=132)
 
 labels = data.iloc[:,-1]
@@ -365,3 +378,5 @@ test2 = Classifier()
 (rank, means) = test2.KMeans( Xtrain, K )
 
 np.savetxt(sys.argv[2] + "k_means", rank)
+
+print classifiedPercentage(rank, y_data)
