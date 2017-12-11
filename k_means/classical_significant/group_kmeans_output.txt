@@ -1,0 +1,18 @@
+10k_means_classical_sig
+[ 557.  679.  308.  235.  166.   62.  523.  603.  241.   71.]
+2k_means_classical_sig
+[  867.  2578.]
+3k_means_classical_sig
+[ 1391.  1631.   423.]
+4k_means_classical_sig
+[  974.   796.   279.  1396.]
+5k_means_classical_sig
+[  755.   412.   185.  1163.   930.]
+6k_means_classical_sig
+[ 654.  343.  467.  934.  168.  879.]
+7k_means_classical_sig
+[ 142.  838.  737.  694.  343.  426.  265.]
+8k_means_classical_sig
+[ 600.  698.  256.  179.  311.  523.  806.   72.]
+9k_means_classical_sig
+[  66.  223.  677.  628.  244.  562.  362.  130.  553.]

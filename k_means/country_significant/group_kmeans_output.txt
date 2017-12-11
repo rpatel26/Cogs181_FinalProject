@@ -1,0 +1,18 @@
+10k_means_country_sig
+[ 425.  306.  154.  110.  197.  293.  360.  604.  650.  346.]
+2k_means_country_sig
+[ 1002.  2443.]
+3k_means_country_sig
+[  441.  1626.  1378.]
+4k_means_country_sig
+[  281.   806.  1398.   960.]
+5k_means_country_sig
+[  713.   272.  1065.   902.   493.]
+6k_means_country_sig
+[ 168.  933.  796.  448.  379.  721.]
+7k_means_country_sig
+[ 189.  614.  468.  817.  756.  389.  212.]
+8k_means_country_sig
+[ 506.  653.  410.  726.  273.  384.  338.  155.]
+9k_means_country_sig
+[ 316.  157.  429.  654.  329.  576.  532.  298.  154.]
